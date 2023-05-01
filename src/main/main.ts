@@ -14,6 +14,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { getData, setData } from './api_methods';
+
 
 class AppUpdater {
   constructor() {
@@ -30,6 +32,24 @@ ipcMain.on('ipc-example', async (event, arg) => {
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
+
+ipcMain.on('get-firebase-data', async (event, ref_path: string) => {
+  try {
+    const data: object|null = await getData(ref_path);
+    event.reply('get-firebase-data', data);
+  } catch (error) {
+    event.reply('get-firebase-data', null);
+  }
+})
+
+ipcMain.on('set-firebase-data', async (event, args: any) => {
+  try {
+    const data: object|null = await setData(args['ref_path'], args["data"]);
+    event.reply('set-firebase-data', data);
+  } catch (error) {
+    event.reply('set-firebase-data', null);
+  }
+})
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
