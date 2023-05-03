@@ -19,7 +19,15 @@ window.electron.ipcRenderer.sendMessage('ipc-example', ['ping']);
 //  console.log(data);
 //})
 //window.electron.firebase.getData('users');
-window.electron.firebase.setData('test', 'it is working :))')
-window.electron.ipcRenderer.on('set-firebase-data', (data) => {
+//window.electron.firebase.setData('users', {'Red0bsi':{'preferences':{'jazz':1}}})
+
+//window.electron.ipcRenderer.on('set-firebase-data', (data) => {
+//  console.log(data)
+//})
+
+/*
+window.electron.analysis.getUserMusics("Red0bsi", 2);
+window.electron.ipcRenderer.on("get-user-musics", (data) => {
+  // eslint-disable-next-line no-console
   console.log(data)
-})
+})*/

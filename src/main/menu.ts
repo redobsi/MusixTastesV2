@@ -36,7 +36,7 @@ export default class MenuBuilder {
 
     return menu;
   }
-
+  
   setupDevelopmentEnvironment(): void {
     this.mainWindow.webContents.on('context-menu', (_, props) => {
       const { x, y } = props;

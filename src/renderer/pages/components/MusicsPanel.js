@@ -28,11 +28,10 @@ const MusicsPanel = ({ current_user }) => {
 
   useEffect(() => {
     // Get the musics
-    window.electron.firebase.getData('musics');
-    window.electron.ipcRenderer.on('get-firebase-data', (data) => {
+    window.electron.analysis.getUserMusics("Red0bsi", 2);
+    window.electron.ipcRenderer.on('get-user-musics', (data) => {
       // eslint-disable-next-line no-console
-      console.log(data);
-      const musics = data
+      const musics = data.data
       setMusics(musics)
     })
   }, [])

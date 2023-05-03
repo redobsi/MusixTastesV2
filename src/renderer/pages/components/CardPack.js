@@ -11,6 +11,7 @@ function CardPack({ current_user }) {
   const [cards, setcards] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(cards.length - 1);
   const [lastDirection, setLastDirection] = useState();
+
   // This part is a copy paste from MusicPanel used to manage the musics being played!
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentMusic, setCurrentMusic] = useState(null);
@@ -40,8 +41,7 @@ function CardPack({ current_user }) {
     window.electron.firebase.getData('musics');
     window.electron.ipcRenderer.on('get-firebase-data', (data) => {
       // eslint-disable-next-line no-console
-      console.log(data);
-      const musics = data
+      const musics = data.data
       setcards(musics)
     })
   }, [])
@@ -70,11 +70,12 @@ function CardPack({ current_user }) {
   const canSwipe = currentIndex >= 0;
 
   // set last direction and decrease current index
-  const swiped = (direction, nameToDelete, index) => {
+  const swiped = (direction, nameToDelete, index, genre) => {
     setLastDirection(direction);
     updateCurrentIndex(index - 1);
     // When it's swiped stop the music
     toggleMusic(currentMusic, true);
+    window.electron.analysis.incrementDB(`users/${"Red0bsi"}/preferences/`, genre, direction==='right'?1:-1); 
   };
 
   const outOfFrame = (name, idx) => {
@@ -93,15 +94,14 @@ function CardPack({ current_user }) {
   };
 
   // increase current index and show card
-  const goBack = async () => {
+  /*const goBack = async () => {
     if (!canGoBack) {
       return;
-    }
-
+    } 
     const newIndex = currentIndex + 1;
     updateCurrentIndex(newIndex);
     await childRefs[newIndex].current.restoreCard();
-  };
+  };*/
 
   return (
     <div className='card-system-wrapper'>
@@ -111,7 +111,7 @@ function CardPack({ current_user }) {
             ref={childRefs[index]}
             className='swipe'
             key={card.id}
-            onSwipe={(dir) => swiped(dir, card.title, index)}
+            onSwipe={(dir) => swiped(dir, card.title, index, card.genre)}
             onCardLeftScreen={() => outOfFrame(card.title, index)}
           >
             <MusicElement
@@ -133,9 +133,9 @@ function CardPack({ current_user }) {
         <CardButton icon={
           <AiFillDislike className="card-button-icon" style={{ color: "#fb745d" }} />
         } OnClick={() => swipe('left')} />
-        <CardButton icon={
+        {/*<CardButton icon={
           <RiArrowGoBackFill className="card-button-icon" style={{ color: "#2bb4c9" }} />
-        } OnClick={() => goBack()} />
+        } OnClick={() => goBack()} />*/}
         <CardButton icon={
           <AiFillLike className="card-button-icon" style={{ color: "#4dcc94" }} />
         } OnClick={() => swipe('right')} />

@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { getData, setData } from './api_methods';
+import { getData, setData, incrementDB, getUserMusics } from './api_methods';
 
 
 class AppUpdater {
@@ -26,30 +26,6 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
-
-ipcMain.on('get-firebase-data', async (event, ref_path: string) => {
-  try {
-    const data: object|null = await getData(ref_path);
-    event.reply('get-firebase-data', data);
-  } catch (error) {
-    event.reply('get-firebase-data', null);
-  }
-})
-
-ipcMain.on('set-firebase-data', async (event, args: any) => {
-  try {
-    const data: object|null = await setData(args['ref_path'], args["data"]);
-    event.reply('set-firebase-data', data);
-  } catch (error) {
-    event.reply('set-firebase-data', null);
-  }
-})
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -155,3 +131,47 @@ app
     });
   })
   .catch(console.log);
+
+
+// CUSTOM LISTNERS
+ipcMain.on('ipc-example', async (event, arg) => {
+  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
+  console.log(msgTemplate(arg));
+  event.reply('ipc-example', msgTemplate('pong'));
+});
+
+ipcMain.on('get-firebase-data', async (event, args: any) => {
+  try {
+    const data: object|null = await getData(args.ref_path);
+    event.reply('get-firebase-data', {data});
+  } catch (error) {
+    event.reply('get-firebase-data', {Message: "ERROR WHEN GETTING DATA"});
+  }
+})
+
+ipcMain.on('set-firebase-data', async (event, args: any) => {
+  try {
+    const data: object|null = await setData(args.ref_path, args.data);
+    event.reply('set-firebase-data', {hints:args.hints, data:data});
+  } catch (error) {
+    event.reply('set-firebase-data', {Message: "ERROR WHEN SETTING DATA"});
+  }
+})
+
+ipcMain.on('db-incrementation', async (event, args:any) => {
+  try {
+    const data: object|null = await incrementDB(args.ref_path, args.key, args.incrementation);
+    event.reply('db-incrementation', {hints:args.hints, data:data});
+  } catch (error) {
+    event.reply('db-incrementation', {Message: "ERROR WHEN INCREMENTING"});
+  }
+})
+
+ipcMain.on('get-user-musics', async(event, args: any) => {
+  try {
+    const data = await getUserMusics(args.userName , args.numberOfMusics)
+    event.reply('get-user-musics', {hints:args.hints, data:data});
+  } catch (error) {
+    event.reply('get-user-musics', {Message: "ERROR WHILE GETTING USER MUSICS"});
+  }
+})
