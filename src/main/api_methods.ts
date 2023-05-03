@@ -94,13 +94,32 @@ function genRandomMusics (musics: any, numberOfMusics: number): object[] {
 }
 export function getUserMusics(userName: string, numberOfMusics: number): Promise<object> {
   return new Promise(async (resolve, reject) => {
-    const musics = await getData('musics');
+
+    interface PrefPercentages {
+      [key: string]: number;
+    }
+    interface UserPrefs {
+      id: number;
+      [key: string]: number;
+    }
+    interface Music {
+      id: string;
+      genre: string;
+      // add more properties as needed
+    }
+    interface FinalNumberOfMusics {
+      [key: string]: number;
+    }
+
+    type MusicEntry = [string, Music];
+
+    const musics: { [key: string]: Music }  = await getData('musics');
     const user: any = await getData('users/'+userName);
-    const userPrefs = user[0]
-    let prefProucentage = {}
+    const userPrefs: UserPrefs = user[0]
+    let prefProucentage: PrefPercentages = {}
     let totalPrefValue: number = 0;
-    let numberAvailableMusicsType: object = {};
-    let finalNumberOfMusics: object = {};
+    let numberAvailableMusicsType: { [key: string]: number }  = {};
+    let finalNumberOfMusics: FinalNumberOfMusics = {};
     let musicsToReturn: object[] = [];
 
     // Get the sum of the preferences values
@@ -115,23 +134,24 @@ export function getUserMusics(userName: string, numberOfMusics: number): Promise
     }
     
     // Get the pourcentages of each preference
-    Object.entries(userPrefs).forEach(([keyPref, valuePref]: any[])=>{
+    Object.entries(userPrefs).forEach(([keyPref, valuePref]) => {
       if (keyPref !== 'id'){
         prefProucentage[keyPref] = (Math.max(valuePref, 0)/totalPrefValue)*100
       }
     })
     // Get thow much of musics of each genre
-    Object.entries(musics).forEach(([keyMusic, valMusic]: any[])=>{
-      if (keyMusic !== 'id'){
-        if (Object.keys(numberAvailableMusicsType).includes(valMusic.genre)){
+    Object.entries(musics).forEach(([keyMusic, valMusic]: MusicEntry) => {
+      if (keyMusic !== 'id') {
+        if (Object.keys(numberAvailableMusicsType).includes(valMusic.genre)) {
           numberAvailableMusicsType[valMusic.genre]++;
         } else {
           numberAvailableMusicsType[valMusic.genre] = 1;
         }
       }
-    })
+    });
+    
     // Get the  number of musics to put on each genre
-    Object.entries(prefProucentage).forEach((pref: object)=>{
+    Object.entries(prefProucentage).forEach((pref: [string, number])=>{
       const keyPref = pref[0]
       const lenMusicsToGet = (prefProucentage[keyPref]/100)*numberOfMusics;
       const lenMusicsAvailable = numberAvailableMusicsType[keyPref];

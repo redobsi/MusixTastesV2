@@ -28,7 +28,7 @@ const MusicsPanel = ({ current_user }) => {
 
   useEffect(() => {
     // Get the musics
-    window.electron.analysis.getUserMusics("Red0bsi", 2);
+    window.electron.analysis.getUserMusics(current_user, 4);
     window.electron.ipcRenderer.on('get-user-musics', (data) => {
       // eslint-disable-next-line no-console
       const musics = data.data

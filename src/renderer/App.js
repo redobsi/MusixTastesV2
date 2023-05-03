@@ -8,7 +8,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './index.css';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState("user_1")
+  const [currentUser, setCurrentUser] = useState("Red0bsi")
 
   return (
       <div className='container'>
