@@ -1,6 +1,6 @@
 import firebase from "firebase/compat/app";
 import { getDatabase, ref, onValue, set, increment } from 'firebase/database';
-import { format } from "path";
+import { listenerCount } from "process";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCTmoff7do6yWqpwjPwGyewyiJ_jz0T9A0",
@@ -83,11 +83,15 @@ export async function incrementDB(refPath: any, key: string,  incrementation: nu
 
 // ---- More functions for getting specific info ----
 
-function genRandomMusics (musics: any, numberOfMusics: number): object[] {
-  const keys = Object.keys(musics);
+function genRandomMusics (musics: any, numberOfMusics: number, listMusics: object[]): object[] {
+  let doCheck: boolean = listMusics.length != 0
   let randomMusics = []
+  const keys = Object.keys(musics);
   for (let i = 0; i < numberOfMusics; i++) {
-    const randomMusic = musics[(Math.floor(Math.random() * keys.length)).toString()];
+    let randomMusic = musics[(Math.floor(Math.random() * keys.length)).toString()];
+    while(doCheck && ([...listMusics, ...randomMusics].includes(randomMusic))) {
+      randomMusic = musics[(Math.floor(Math.random() * keys.length)).toString()];
+    }
     randomMusics.push(randomMusic)
   }
   return randomMusics
@@ -129,7 +133,7 @@ export function getUserMusics(userName: string, numberOfMusics: number): Promise
 
     // If the person have 0 preferences just give random musics => Because you can't divide by 0 (pourcentages)
     if (totalPrefValue === 0){
-      const randomMusics = genRandomMusics(musics, numberOfMusics)
+      const randomMusics = genRandomMusics(musics, numberOfMusics, [])
       resolve(randomMusics)
     }
     
@@ -167,14 +171,14 @@ export function getUserMusics(userName: string, numberOfMusics: number): Promise
           if (music[1].genre === genre) {
             musicsToReturn.push(music[1]);
             musicCounter -= 1;
-          }
+          } 
         })
       } catch(error){}
     })
 
     // Add more musics if the number of music to provide isn't enough 
-    if (musicsToReturn.length < numberOfMusics) {
-      const extendMusicList = genRandomMusics(musics, (numberOfMusics-musicsToReturn.length))
+    while (musicsToReturn.length < numberOfMusics) {
+      const extendMusicList = genRandomMusics(musics, (numberOfMusics-musicsToReturn.length), musicsToReturn)
       musicsToReturn = [...musicsToReturn, ...extendMusicList]
     }
     resolve(musicsToReturn);

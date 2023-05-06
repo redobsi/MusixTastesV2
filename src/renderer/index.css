@@ -247,3 +247,8 @@ body{
     flex-direction: column;
     align-items: center;
 }
+
+/* Get rid of the scroll bar*/
+::-webkit-scrollbar {
+    display: none;
+  }

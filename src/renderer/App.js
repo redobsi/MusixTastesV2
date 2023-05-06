@@ -1,28 +1,79 @@
-import { useState, useEffect } from "react"
-import Cursor from "./pages/components/Cursor";
-//import MusicPlayer from "./components/MusicPlayer";
-import SideBar from "./pages/components/SideBar";
-import Home from "./pages/Home";
-import Discover from "./pages/Discover";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import './login_system/LoginSystemApp.css';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import Profile from './login_system/Profile';
+import Register from './login_system/Register';
+import VerifyEmail from './login_system/VerifyEmail';
+import Login from './login_system/Login';
+import {useState, useEffect} from 'react';
+import {AuthProvider} from './login_system/AuthContext';
+import {auth} from './login_system/firebase';
+import {onAuthStateChanged} from 'firebase/auth';
+import PrivateRoute from './login_system/PrivateRoute';
+import {Navigate} from 'react-router-dom';
+// Custom Imports
+import Packager from './pages/Packager'
+import Home from './pages/Home';
+import Discover from './pages/Discover';
+import Cursor from './pages/components/Cursor';
+import Loading from './pages/Loading';
 import './index.css';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState("Red0bsi")
+
+  const [currentUser, setCurrentUser] = useState(null)
+  const [timeActive, setTimeActive] = useState(false)
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user)
+    })
+  }, [])
 
   return (
-      <div className='container'>
-        <Router>
-          <SideBar/>
-          <Routes>
-            <Route path='/' element={<Home current_user={currentUser}/>}/>
-            <Route path='/Discover' element={<Discover current_user={currentUser}/>}></Route>
-          </Routes>
-           <Cursor/>
-        </Router>
-      </div>
-  )
-}
+    <Router>
+      <AuthProvider value={{currentUser, timeActive, setTimeActive}}>
+        <Routes>
+          
+          {/* Main Route */}
+          <Route path='/index.html' element={
+            <PrivateRoute>
+              <Packager/>
+            </PrivateRoute>
+          }/>
+          
+          {/* Login System Routes */}
+          <Route path="/login" element={
+            !currentUser?.emailVerified 
+            ? <Login/>
+            : <Navigate to='/index.html' replace/>
+          } />
+          <Route path="/register" element={
+            !currentUser?.emailVerified 
+            ? <Register/>
+            : <Navigate to='/index.html' replace/>
+          } />
+          <Route path='/verify-email' element={<VerifyEmail/>} /> 
+          
+          {/* The UI Routes (pages for instance) */}
+          <Route path='/Home' element={
+            <Packager 
+              ChildElement={<Home current_user={'Red0bsi'}/>}
+              current_user={"Red0bsi"}/>
+            }/>
+          <Route path='/Discover' element={
+            <Packager 
+              ChildElement={<Discover current_user={'Red0bsi'}/>} 
+              current_user={"Red0bsi"}/>
+            }></Route>
+          
+          {/* Misc Routes */}
+          <Route path='/loading' element={<Loading/>}></Route>
 
+        </Routes>
+        <Cursor/>  
+      </AuthProvider>
+  </Router>
+  );
+}
 
 export default App;

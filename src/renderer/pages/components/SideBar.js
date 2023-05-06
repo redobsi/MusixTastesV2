@@ -9,7 +9,7 @@ const SideBar = () => {
       <div className="Menu">
         <div className="Link-Menu">
           <FaHome/>
-          <Link to='/'>Home</Link>
+          <Link to='/Home'>Home</Link>
         </div>
         <div className="Link-Menu">
           <RxMagnifyingGlass/>
