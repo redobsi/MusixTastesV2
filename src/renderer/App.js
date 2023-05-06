@@ -10,19 +10,22 @@ import {auth} from './login_system/firebase';
 import {onAuthStateChanged} from 'firebase/auth';
 import PrivateRoute from './login_system/PrivateRoute';
 import {Navigate} from 'react-router-dom';
+
 // Custom Imports
 import Packager from './pages/Packager'
 import Home from './pages/Home';
 import Discover from './pages/Discover';
 import Cursor from './pages/components/Cursor';
 import Loading from './pages/Loading';
-import './index.css';
+import Playlists from './pages/Playlists';
+import './styles/index.css';
+
 
 function App() {
 
   const [currentUser, setCurrentUser] = useState(null)
   const [timeActive, setTimeActive] = useState(false)
-
+  console.log(currentUser?.uid)
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       setCurrentUser(user)
@@ -37,7 +40,7 @@ function App() {
           {/* Main Route */}
           <Route path='/index.html' element={
             <PrivateRoute>
-              <Packager/>
+              <Navigate to={'/Home'} replace/>
             </PrivateRoute>
           }/>
           
@@ -65,9 +68,18 @@ function App() {
               ChildElement={<Discover current_user={'Red0bsi'}/>} 
               current_user={"Red0bsi"}/>
             }></Route>
-          
+          <Route path='/Playlists' element={
+            <Packager
+              ChildElement={<Playlists current_user={'Red0bsi'}/>}
+              current_user={'Red0bsi'}/>
+          }/>
+
           {/* Misc Routes */}
-          <Route path='/loading' element={<Loading/>}></Route>
+          <Route path='/loading' element={
+            currentUser === null
+            ? <Loading/>
+            : <Navigate to='/index.html' replace/>
+          }></Route>
 
         </Routes>
         <Cursor/>  
@@ -77,3 +89,6 @@ function App() {
 }
 
 export default App;
+{/*<Packager
+    ChildElement={<Playlists current_user={'Red0bsi'}/>}
+    current_user={'Red0bsi'}/>*/}

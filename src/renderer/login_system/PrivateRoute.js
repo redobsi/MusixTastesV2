@@ -7,12 +7,11 @@ export default function PrivateRoute({children}) {
   if (currentUser === null) {
     // If the currentUser is null that means that the data haven't loaded yet
     // So we navigate to the loading page waiting it for getting the data
-    console.log(currentUser)
+    console.log('verified, was null')
     return <Navigate to='/loading' replace/>
-  }
-
-  if(!currentUser?.emailVerified){ // Guard clause
-    console.log(currentUser)
+  } 
+  else if(!currentUser?.emailVerified){ // Guard clause
+    console.log('verified, was null')
     return <Navigate to='/login' replace/>
   }
 
