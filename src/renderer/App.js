@@ -1,6 +1,5 @@
 import './login_system/LoginSystemApp.css';
 import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import Profile from './login_system/Profile';
 import Register from './login_system/Register';
 import VerifyEmail from './login_system/VerifyEmail';
 import Login from './login_system/Login';
@@ -18,6 +17,7 @@ import Discover from './pages/Discover';
 import Cursor from './pages/components/Cursor';
 import Loading from './pages/Loading';
 import Playlists from './pages/Playlists';
+import Profile from './pages/Profile';
 import './styles/index.css';
 
 
@@ -71,6 +71,11 @@ function App() {
           <Route path='/Playlists' element={
             <Packager
               ChildElement={<Playlists current_user={'Red0bsi'}/>}
+              current_user={'Red0bsi'}/>
+          }/>
+          <Route path='/Profile' element={
+            <Packager
+              ChildElement={<Profile current_user={'Red0bsi'}/>}
               current_user={'Red0bsi'}/>
           }/>
 

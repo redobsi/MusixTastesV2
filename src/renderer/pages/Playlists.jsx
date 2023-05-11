@@ -4,7 +4,7 @@ import Playlist from './components/Playlist';
 import '../styles/playlists.css'
 
 const Playlists = ({current_user}) => {
-  const [trendingAuthor, setTrendingAuthor] = useState("Mark Clinton")
+  const [trendingAuthor, setTrendingAuthor] = useState("Mike Jonnah")
   const [trendingTitle, setTrendingTitle] = useState("On My Way To Success")
   const [trendingListeners, setTrendingListeners] = useState('32,500');
   const [playlists, setPlaylists] = useState(["My Playlist", "Second Playlist", "More Playlist"]);
